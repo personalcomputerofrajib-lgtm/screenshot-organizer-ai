@@ -42,10 +42,11 @@ class ScreenshotCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Image
+            // Image (downsampled to prevent OOM memory leak crashes)
             Image.file(
               File(screenshot.imagePath),
               fit: BoxFit.cover,
+              cacheWidth: 400, // Downscale image in RAM
               errorBuilder: (_, __, ___) => Container(
                 color: AppTheme.surfaceColor,
                 child: const Icon(
