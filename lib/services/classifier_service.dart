@@ -8,14 +8,21 @@ class ClassifierService {
   /// Classify extracted text into a category.
   /// Returns the best matching category name.
   String classify(String text) {
-    if (text.trim().isEmpty) {
-      return 'Meme'; // No text = likely a meme/image
+    final trimmedText = text.trim();
+    if (trimmedText.isEmpty) {
+      return 'Photo/Meme'; // Zero text = likely a photo
     }
 
-    final lowerText = text.toLowerCase();
+    final lowerText = trimmedText.toLowerCase();
+    
+    // Check for "Photo/Meme" first if text is extremely short
+    if (trimmedText.length < 15) {
+      return 'Photo/Meme';
+    }
+
     final scores = <String, int>{};
 
-    // Score each category by counting keyword matches
+    // Score each category by counting keyword matches with weights
     for (final entry in AppConstants.categoryKeywords.entries) {
       final category = entry.key;
       final keywords = entry.value;
@@ -24,10 +31,18 @@ class ClassifierService {
 
       int score = 0;
       for (final keyword in keywords) {
-        if (lowerText.contains(keyword.toLowerCase())) {
-          score++;
-          // Give extra weight for longer, more specific keywords
-          if (keyword.length > 5) score++;
+        final kw = keyword.toLowerCase();
+        if (lowerText.contains(kw)) {
+          // Weighted scoring
+          if (category == 'Crypto' && (kw == 'binance' || kw == 'bitcoin' || kw == 'wallet')) {
+            score += 10; // High confidence for main crypto terms
+          } else if (category == 'OTP' && (kw == 'otp' || kw == 'verification code')) {
+            score += 8;
+          } else if (kw.length > 6) {
+            score += 3; // Longer words = more specific
+          } else {
+            score += 1;
+          }
         }
       }
 
@@ -37,11 +52,19 @@ class ClassifierService {
     }
 
     if (scores.isEmpty) {
-      // Check if text is very short (< 20 chars), likely a meme
-      if (text.trim().length < 20) {
-        return 'Meme';
-      }
-      return 'Other';
+      // If fairly long text but no keywords match, it's "Other"
+      return trimmedText.length > 100 ? 'Other' : 'Photo/Meme';
+    }
+
+    // Collision Resolution: Crypto/Finance vs OTP
+    // Often crypto apps have 2FA/OTPs. If we see both, 
+    // prioritize the actual app purpose (Crypto/Finance) unless OTP score is massive.
+    if (scores.containsKey('Crypto') && scores.containsKey('OTP')) {
+      if (scores['Crypto']! >= 5) scores.remove('OTP');
+    }
+    
+    if (scores.containsKey('Finance') && scores.containsKey('OTP')) {
+       if (scores['Finance']! >= 5) scores.remove('OTP');
     }
 
     // Return the category with the highest score

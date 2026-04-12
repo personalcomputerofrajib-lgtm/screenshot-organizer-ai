@@ -180,7 +180,7 @@ class SettingsScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 32),
             child: Center(
               child: Text(
-                'Screenshot AI v1.0.0',
+                'Photo Analyser AI v1.0.0',
                 style: AppTheme.bodySmall,
               ),
             ),

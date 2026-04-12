@@ -143,7 +143,7 @@ class _SplashScreenState extends State<SplashScreen>
                         const SizedBox(height: 24),
                         // App Name
                         const Text(
-                          'Screenshot AI',
+                          'Photo Analyser AI',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 32,

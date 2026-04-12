@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../models/screenshot_model.dart';
 import 'database_service.dart';
 
@@ -13,7 +14,18 @@ class ScannerService {
   /// Request photo permissions
   Future<bool> requestPermission() async {
     final PermissionState ps = await PhotoManager.requestPermissionExtend();
-    return ps.isAuth || ps.hasAccess;
+    if (ps.isAuth || ps.hasAccess) return true;
+
+    // Fallback logic using permission_handler for Android
+    if (Platform.isAndroid) {
+      if (await Permission.photos.isGranted || await Permission.photos.isLimited) return true;
+      if (await Permission.storage.isGranted) return true;
+      
+      // Attempt to request via permission_handler if PhotoManager failed
+      final status = await Permission.photos.request();
+      if (status.isGranted || status.isLimited) return true;
+    }
+    return false;
   }
 
   /// Scan device for screenshots and return new (unscanned) ones.
@@ -38,23 +50,28 @@ class ScannerService {
         : null;
 
     // Get all albums
-    final List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
-      type: RequestType.image,
-      filterOption: FilterOptionGroup(
-        imageOption: const FilterOption(
-          sizeConstraint: SizeConstraint(
-            minWidth: 100,
-            minHeight: 100,
+    List<AssetPathEntity> albums = <AssetPathEntity>[];
+    try {
+      albums = await PhotoManager.getAssetPathList(
+        type: RequestType.image,
+        filterOption: FilterOptionGroup(
+          imageOption: const FilterOption(
+            sizeConstraint: SizeConstraint(
+              minWidth: 100,
+              minHeight: 100,
+            ),
           ),
+          orders: [
+            const OrderOption(
+              type: OrderOptionType.createDate,
+              asc: false,
+            ),
+          ],
         ),
-        orders: [
-          const OrderOption(
-            type: OrderOptionType.createDate,
-            asc: false,
-          ),
-        ],
-      ),
-    );
+      );
+    } catch (e) {
+      // PhotoManager might fail if it internally asserts permissions as denied, rely on standardDirs scan
+    }
 
     final List<ScreenshotModel> newScreenshots = [];
 

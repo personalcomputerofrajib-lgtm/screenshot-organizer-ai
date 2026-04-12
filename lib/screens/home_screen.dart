@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Screenshot AI',
+                  'Photo Analyser AI',
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,

@@ -43,7 +43,7 @@ class _ScreenshotDetailScreenState extends State<ScreenshotDetailScreen> {
   void _shareContent() async {
     try {
       final file = XFile(_screenshot.imagePath);
-      final text = 'Organized by Screenshot AI\n\n${_screenshot.extractedText ?? ""}';
+      final text = 'Organized by Photo Analyser AI\n\n${_screenshot.extractedText ?? ""}';
       
       await Share.shareXFiles(
         [file],
@@ -173,21 +173,27 @@ class _ScreenshotDetailScreenState extends State<ScreenshotDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image Viewer
-              Container(
-                width: double.infinity,
-                color: Colors.black,
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.45,
-                ),
-                child: InteractiveViewer(
-                  minScale: 1.0,
-                  maxScale: 4.0,
-                  child: Image.file(
-                    File(_screenshot.imagePath),
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Center(
-                      child: Icon(Icons.broken_image, color: Colors.white54, size: 48),
+              // Full-Screen Immersive Image Viewer
+              GestureDetector(
+                onDoubleTap: () {
+                  // Future: Toggle zoom or full-screen overlay
+                },
+                child: Container(
+                  width: double.infinity,
+                  color: Colors.black,
+                  // Remove the 0.45 height restriction - allow full view
+                  child: InteractiveViewer(
+                    minScale: 1.0,
+                    maxScale: 6.0, // Increased zoom depth
+                    child: Hero(
+                      tag: 'screenshot_${_screenshot.id}',
+                      child: Image.file(
+                        File(_screenshot.imagePath),
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Center(
+                          child: Icon(Icons.broken_image, color: Colors.white54, size: 48),
+                        ),
+                      ),
                     ),
                   ),
                 ),

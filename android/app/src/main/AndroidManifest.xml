@@ -28,7 +28,7 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
 
     <application
-        android:label="Screenshot AI"
+        android:label="Photo Analyser AI"
         android:name="${applicationName}"
         android:icon="@android:drawable/sym_def_app_icon">
 

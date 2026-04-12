@@ -29,9 +29,15 @@ class AppTheme {
   // Category Colors
   static const Color otpColor = Color(0xFFFF6B6B);
   static const Color paymentColor = Color(0xFF4ECB71);
+  static const Color financeColor = Color(0xFF2E86DE);
+  static const Color cryptoColor = Color(0xFFFDCB6E);
   static const Color shoppingColor = Color(0xFFFF9F43);
   static const Color studyColor = Color(0xFF54A0FF);
-  static const Color travelColor = Color(0xFF5F27CD);
+  static const Color codeColor = Color(0xFF10AC84);
+  static const Color documentColor = Color(0xFF5F27CD);
+  static const Color receiptColor = Color(0xFFFF9FF3);
+  static const Color socialColor = Color(0xFF00A8FF);
+  static const Color travelColor = Color(0xFF341F97);
   static const Color memeColor = Color(0xFFFF78C5);
   static const Color otherColor = Color(0xFF8B949E);
 
