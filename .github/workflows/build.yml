@@ -77,26 +77,6 @@ jobs:
           curl -Lo assets/fonts/Inter-Bold.ttf \
             "https://github.com/rsms/inter/releases/download/v4.0/Inter-Bold.ttf" || true
 
-      # ─── Update pubspec to include fonts ───────────────────────────────────
-      - name: Inject font declarations into pubspec.yaml
-        run: |
-          # Only add if not already present
-          if ! grep -q "Inter-Regular" pubspec.yaml; then
-            cat >> pubspec.yaml << 'EOF'
-
-  fonts:
-    - family: Inter
-      fonts:
-        - asset: assets/fonts/Inter-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/Inter-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Inter-Bold.ttf
-          weight: 700
-EOF
-          fi
 
       # ─── Analysis ──────────────────────────────────────────────────────────
       - name: Flutter Analyze (warnings allowed, errors fail)
