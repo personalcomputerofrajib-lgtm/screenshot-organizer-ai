@@ -29,7 +29,7 @@ class ScannerService {
   }) async {
     final hasPermission = await requestPermission();
     if (!hasPermission) {
-      return [];
+      throw Exception('Storage permission required. Please open your Android app settings and allow Photos & Videos access to scan screenshots.');
     }
 
     // If not analyzing existing, only look at files newer than cutoff
