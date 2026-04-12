@@ -87,7 +87,7 @@ jobs:
         run: flutter build apk --debug --no-tree-shake-icons
         
       # ─── Build Release APK ─────────────────────────────────────────────────
-      - name: Build Release APK (unsigned)
+      - name: Build Release APK
         run: flutter build apk --release --no-tree-shake-icons
 
       # ─── Upload Debug APK ──────────────────────────────────────────────────
