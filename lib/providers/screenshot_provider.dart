@@ -158,7 +158,11 @@ class ScreenshotProvider extends ChangeNotifier {
 
       _scanStatus = _newFound > 0
           ? 'Done! $_newFound new screenshot${_newFound == 1 ? '' : 's'} added.'
-          : 'Scan complete.';
+          : 'Scan complete. 0 new screenshots found.';
+          
+      notifyListeners();
+      // Keep the success banner visible for 2.5 seconds before hiding it
+      await Future.delayed(const Duration(milliseconds: 2500));
     } catch (e) {
       _error = e.toString().replaceFirst('Exception: ', '');
       _scanStatus = '';
