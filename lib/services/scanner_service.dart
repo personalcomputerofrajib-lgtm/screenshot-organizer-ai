@@ -58,22 +58,26 @@ class ScannerService {
 
     final List<ScreenshotModel> newScreenshots = [];
 
-    // Find screenshot albums
+    // Find the main unified gallery album or explicit screenshot albums
     for (final album in albums) {
       final albumName = album.name.toLowerCase();
 
-      // Broaden detection: match "screen", "capture", "shot", "screencap", "cast"
-      final isLikelyScreenshotAlbum =
+      // Get the unified gallery (Recent/All) where photo_manager dumps everything chronologically,
+      // OR specific screenshot folders. This prevents duplicating scans from multiple nested sub-albums.
+      final isValidAlbum = album.isAll ||
+          albumName == 'recent' ||
+          albumName == 'recents' ||
+          albumName == 'all' ||
           albumName.contains('screenshot') ||
           albumName.contains('screen shot') ||
-          albumName.contains('captures') ||
           albumName.contains('screencap') ||
+          albumName.contains('captures') ||
           albumName.contains('screen') ||
-          albumName.contains('capture') ||
-          albumName == 'recents' || // Some launchers dump screenshots here
-          albumName == 'all';
+          albumName.contains('capture');
 
-      // Get all assets in this potentially relevant album
+      if (!isValidAlbum) continue;
+
+      // Get all assets in this relevant album
       final int assetCount = await album.assetCountAsync;
       if (assetCount == 0) continue;
 
@@ -89,20 +93,6 @@ class ScannerService {
         if (cutoff != null && asset.createDateTime.isBefore(cutoff)) {
           continue;
         }
-
-        // Broaden detection: if album isn't explicitly a screenshot album, check file metadata
-        bool isScreenshot = isLikelyScreenshotAlbum;
-
-        if (!isScreenshot) {
-          final title = asset.title?.toLowerCase() ?? '';
-          if (title.contains('screenshot') ||
-              title.contains('screencap') ||
-              title.startsWith('screen_')) {
-            isScreenshot = true;
-          }
-        }
-
-        if (!isScreenshot) continue;
 
         File? file;
         try {
